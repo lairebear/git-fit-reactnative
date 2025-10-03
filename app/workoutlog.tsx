@@ -1,4 +1,3 @@
-// app/workoutlog.tsx
 import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, StyleSheet, Pressable, Alert, ActivityIndicator } from "react-native";
 import type { Workout } from "../src/models/Workout";
