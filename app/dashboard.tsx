@@ -9,7 +9,7 @@ const Dashboard = () => {
         <Text>Total Workouts: 4</Text>
         <Text>Total Exercises: 28</Text>
       </View>
-      <Button title="View Workout Log" onPress={() => Alert.alert('Navigate to Workout Log')} />
+      <Button title="Log Workout" onPress={() => Alert.alert('Navigate to Workout Log')} />
         {/* <NavButton label="Workout Log" onPress={() => router.push("/workoutlog")} /> */}
       <Button title="View Exercise Catalog" onPress={() => Alert.alert('Navigate to Exercise Catalog')} />
         {/* <NavButton label="Exercise Catalog" onPress={() => router.push("/exercisecatalog")} /> */}
@@ -19,7 +19,6 @@ const Dashboard = () => {
     </View>
   );
 };
-
 
 const styles = StyleSheet.create({
     container: { flex: 1, padding: 24, justifyContent: "center", alignItems: "center", backgroundColor: "#ffffff" },
