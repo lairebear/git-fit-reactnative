@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { View, Text, StyleSheet, ScrollView, Pressable, Animated } from "react-native";
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, Pressable, Animated } from "react-native";
 import { useRouter } from "expo-router";
 
 const quotes = [
@@ -45,7 +45,9 @@ export default function Dashboard() {
   };
 
   return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
     <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.title}>GitFit</Text>
       <Text style={styles.header}>Dashboard</Text>
 
       {/* streak card */}
@@ -75,6 +77,7 @@ export default function Dashboard() {
         <Text style={styles.buttonText}>Exercise Catalog</Text>
       </Pressable>
     </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -84,13 +87,19 @@ const styles = StyleSheet.create({
       backgroundColor: "#fff",
       flexGrow: 1,
     },
-    header: {
-      padding: 40,
-      fontSize: 28,
-      fontWeight: "700",
-      marginBottom: 5,
-      textAlign: "center",
-    },
+    title: {
+        fontSize: 28,
+        fontWeight: "800",
+        textAlign: "center",
+        marginBottom: 2,     // tiny gap before the header
+      },
+      header: {
+        fontSize: 18,        // smaller to look like a subtitle
+        fontWeight: "400",   // lighter weight for contrast
+        textAlign: "center",
+        marginBottom: 12,    // some space before the next section
+        color: "#555",       // softer color so it doesn’t compete
+      },
     card: {
       padding: 20,
       borderRadius: 12,
