@@ -1,25 +1,26 @@
-// app/myJsScreen.js
-import React, { useEffect, useState } from "react";
-import { View, Text, Button, StyleSheet } from "react-native";
-import { fetchWorkouts, ping } from "../src/services/apiClient";
+// idk if im using this yet
 
-export default function MyJsScreen({ navigation }) {
-  const [pong, setPong] = useState(null);
+// import React, { useEffect, useState } from "react";
+// import { View, Text, Button, StyleSheet } from "react-native";
+// import { fetchWorkouts, ping } from "../src/services/apiClient";
 
-  useEffect(() => {
-    ping().then(setPong).catch(console.warn);
-  }, []);
+// export default function MyJsScreen({ navigation }) {
+//   const [pong, setPong] = useState(null);
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>JS Screen</Text>
-      <Text>Ping result: {pong ? JSON.stringify(pong) : "loading..."}</Text>
-      <Button title="Refresh" onPress={() => fetchWorkouts().then(w => console.log(w)).catch(console.warn)} />
-    </View>
-  );
-}
+//   useEffect(() => {
+//     ping().then(setPong).catch(console.warn);
+//   }, []);
 
-const styles = StyleSheet.create({
-  container: { flex: 1, alignItems: "center", justifyContent: "center", padding: 16 },
-  title: { fontSize: 20, fontWeight: "700", marginBottom: 8 },
-});
+//   return (
+//     <View style={styles.container}>
+//       <Text style={styles.title}>JS Screen</Text>
+//       <Text>Ping result: {pong ? JSON.stringify(pong) : "loading..."}</Text>
+//       <Button title="Refresh" onPress={() => fetchWorkouts().then(w => console.log(w)).catch(console.warn)} />
+//     </View>
+//   );
+// }
+
+// const styles = StyleSheet.create({
+//   container: { flex: 1, alignItems: "center", justifyContent: "center", padding: 16 },
+//   title: { fontSize: 20, fontWeight: "700", marginBottom: 8 },
+// });
