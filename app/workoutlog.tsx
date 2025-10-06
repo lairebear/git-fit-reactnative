@@ -2,13 +2,14 @@ import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, StyleSheet, Pressable, Alert, ActivityIndicator } from "react-native";
 import type { Workout } from "../src/models/Workout";
 import { sampleWorkouts } from "../src/models/Workout";
-// If you created the simple JS API client as suggested earlier:
 import { fetchWorkouts } from "../src/services/apiClient";
+import { useRouter } from "expo-router";
 
 export default function WorkoutLog() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     let mounted = true;
@@ -63,7 +64,12 @@ export default function WorkoutLog() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Workout Log</Text>
+
+      <Pressable style={styles.backButton} onPress={() => router.back()}>
+        <Text style={styles.backText}>← Back</Text>
+      </Pressable>
+
+      <Text style={styles.title}>Workout History</Text>
 
       {error ? <Text style={styles.error}>{error}</Text> : null}
 
@@ -83,17 +89,16 @@ const styles = StyleSheet.create({
   container: { 
     flex: 1, 
     backgroundColor: "#f7f7f8", 
-    padding: 16 
+    padding: 16
   },
   center: { 
     justifyContent: "center", 
     alignItems: "center" 
   },
   title: { 
-    padding: 40,
+    marginTop: 15,
     fontSize: 24, 
-    fontWeight: "700", 
-    marginBottom: 10,
+    fontWeight: "700",
   },
   card: { 
     backgroundColor: "#fff", 
@@ -110,12 +115,21 @@ const styles = StyleSheet.create({
     fontSize: 13, 
     color: "#666", 
     marginTop: 6 },
-  empty: { marginTop: 20, 
+  empty: { 
+    marginTop: 20, 
     textAlign: "center", 
     color: "#777" 
   },
   error: { 
     color: "#b00020", 
     marginBottom: 8 
+  },
+  backButton: { 
+    marginBottom: 5,
+    marginTop: 30,
+  },
+  backText: { 
+    fontSize: 16, 
+    color: "#007AFF" 
   },
 });
