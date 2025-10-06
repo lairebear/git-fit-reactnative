@@ -74,18 +74,48 @@ export default function WorkoutLog() {
         contentContainerStyle={{ paddingBottom: 32 }}
       />
 
-      {workouts.length === 0 && <Text style={styles.empty}>No workouts yet — start one from the Dashboard</Text>}
+      {workouts.length === 0 && <Text style={styles.empty}>No workouts yet — start one from the Dashboard!</Text>}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f7f7f8", padding: 16 },
-  center: { justifyContent: "center", alignItems: "center" },
-  title: { fontSize: 24, fontWeight: "700", marginBottom: 12 },
-  card: { backgroundColor: "#fff", padding: 16, borderRadius: 10, marginBottom: 12, elevation: 2 },
-  date: { fontSize: 18, fontWeight: "600" },
-  meta: { fontSize: 13, color: "#666", marginTop: 6 },
-  empty: { marginTop: 20, textAlign: "center", color: "#777" },
-  error: { color: "#b00020", marginBottom: 8 },
+  container: { 
+    flex: 1, 
+    backgroundColor: "#f7f7f8", 
+    padding: 16 
+  },
+  center: { 
+    justifyContent: "center", 
+    alignItems: "center" 
+  },
+  title: { 
+    padding: 40,
+    fontSize: 24, 
+    fontWeight: "700", 
+    marginBottom: 10,
+  },
+  card: { 
+    backgroundColor: "#fff", 
+    padding: 16, 
+    borderRadius: 10, 
+    marginBottom: 12, 
+    elevation: 2 
+  },
+  date: { 
+    fontSize: 18, 
+    fontWeight: "600" 
+  },
+  meta: { 
+    fontSize: 13, 
+    color: "#666", 
+    marginTop: 6 },
+  empty: { marginTop: 20, 
+    textAlign: "center", 
+    color: "#777" 
+  },
+  error: { 
+    color: "#b00020", 
+    marginBottom: 8 
+  },
 });

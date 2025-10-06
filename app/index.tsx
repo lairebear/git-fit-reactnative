@@ -63,11 +63,19 @@ export default function Dashboard() {
       </View>
 
       {/* navigation buttons */}
+      
+      <Pressable
+        style={styles.button}
+        onPress={() => router.push("/logworkout")}
+      >
+        <Text style={styles.buttonText}>Log Workout</Text>
+      </Pressable>
+
       <Pressable
         style={styles.button}
         onPress={() => router.push("/workoutlog")}
       >
-        <Text style={styles.buttonText}>Log Workout</Text>
+        <Text style={styles.buttonText}>Workout History</Text>
       </Pressable>
 
       <Pressable
@@ -91,14 +99,14 @@ const styles = StyleSheet.create({
         fontSize: 28,
         fontWeight: "800",
         textAlign: "center",
-        marginBottom: 2,     // tiny gap before the header
+        marginBottom: 2,     
       },
       header: {
-        fontSize: 18,        // smaller to look like a subtitle
-        fontWeight: "400",   // lighter weight for contrast
+        fontSize: 18,        
+        fontWeight: "400",   
         textAlign: "center",
-        marginBottom: 12,    // some space before the next section
-        color: "#555",       // softer color so it doesn’t compete
+        marginBottom: 12,    
+        color: "#555",       
       },
     card: {
       padding: 20,
