@@ -1,6 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, Pressable, Animated } from "react-native";
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, Pressable, Animated, Alert} from "react-native";
 import { useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { format, differenceInCalendarDays } from "date-fns"; // install date-fns if needed
+import * as Progress from 'react-native-progress';  // Import progress bar
 
 const quotes = [
   "Discipline is the greatest form of self-love.",
@@ -13,18 +16,65 @@ const quotes = [
 export default function Dashboard() {
   const [streak, setStreak] = useState(0);
   const [quote, setQuote] = useState("");
+  const [showCongrats, setShowCongrats] = useState(false);
   const router = useRouter();
 
   const scale1 = useRef(new Animated.Value(1)).current;
   const scale2 = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    const savedStreak = 67;
-    setStreak(savedStreak);
-
-    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-    setQuote(randomQuote);
+    const checkStreak = async () => {
+      try {
+        const lastDate = await AsyncStorage.getItem("lastWorkoutDate");
+        const today = format(new Date(), "yyyy-MM-dd");
+  
+        if (!lastDate) {
+          // First time logging in — initialize
+          await AsyncStorage.setItem("lastWorkoutDate", today);
+          await AsyncStorage.setItem("streak", "1");
+          setStreak(1);
+          return;
+        }
+  
+        const daysSince = differenceInCalendarDays(new Date(today), new Date(lastDate));
+  
+        if (daysSince === 0) {
+          // Already logged today
+          const savedStreak = await AsyncStorage.getItem("streak");
+          setStreak(Number(savedStreak ?? 1));
+        } else if (daysSince === 1) {
+          // Logged yesterday, increase streak
+          const savedStreak = Number(await AsyncStorage.getItem("streak") || 1);
+          const newStreak = savedStreak + 1;
+          await AsyncStorage.setItem("streak", newStreak.toString());
+          await AsyncStorage.setItem("lastWorkoutDate", today);
+          setStreak(newStreak);
+        } else {
+          // Missed a day — reset
+          await AsyncStorage.setItem("streak", "1");
+          await AsyncStorage.setItem("lastWorkoutDate", today);
+          setStreak(1);
+        }
+      } catch (err) {
+        console.error("Failed to check streak:", err);
+        setStreak(0); // fallback
+      }
+  
+      // Random quote
+      const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+      setQuote(randomQuote);
+    };
+    checkStreak();
   }, []);
+  
+    // Trigger congratulatory message on 7-day streak
+    useEffect(() => {
+      if (streak === 7 && !showCongrats) {
+        setShowCongrats(true);
+        Alert.alert("🎉 Congrats!", "Congrats on your one-week streak!");
+      }
+    }, [streak, showCongrats]);
+
 
   const animatePressIn = (scale: Animated.Value) => {
     Animated.spring(scale, {
