@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, StyleSheet, Pressable, Alert, ActivityIndicator } from "react-native";
+import React, { useEffect, useState, useMemo } from "react";
+import { View, Text, FlatList, StyleSheet, Pressable, ActivityIndicator } from "react-native";
 import type { Workout } from "../src/models/Workout";
 import { sampleWorkouts } from "../src/models/Workout";
 import { fetchWorkouts } from "../src/services/apiClient";
@@ -7,51 +7,31 @@ import { useRouter } from "expo-router";
 
 export default function WorkoutLog() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    let mounted = true;
-
-    // attempt to fetch from backend; if it fails, fall back to sampleWorkouts
     fetchWorkouts()
-      .then((data) => {
-        if (!mounted) return;
-        setWorkouts(Array.isArray(data) ? data : sampleWorkouts);
-      })
+      .then((data) => setWorkouts(Array.isArray(data) ? data : sampleWorkouts))
       .catch((err) => {
         console.warn("fetchWorkouts error:", err);
-        if (!mounted) return;
         setError("Unable to load workouts (using sample data).");
         setWorkouts(sampleWorkouts);
       })
-      .finally(() => {
-        if (!mounted) return;
-        setLoading(false);
-      });
-
-    return () => {
-      mounted = false;
-    };
+      .finally(() => setLoading(false));
   }, []);
 
-  const renderItem = ({ item }: { item: Workout }) => {
-    return (
-      <Pressable
-        style={styles.card}
-        onPress={() =>
-          Alert.alert(
-            "Workout Details",
-            `Date: ${item.date}\nExercises: ${item.exercises.length}\nNotes: ${item.notes ?? "—"}`
-          )
-        }
-      >
-        <Text style={styles.date}>{item.date}</Text>
-        <Text style={styles.meta}>{item.exercises.length} exercises • {item.durationMinutes ?? "—"} min</Text>
-      </Pressable>
-    );
-  };
+  const grouped = useMemo(() => {
+    return workouts.reduce((groups, workout) => {
+      const date = workout.date;
+      if (!groups[date]) groups[date] = [];
+      groups[date].push(workout);
+      return groups;
+    }, {} as Record<string, Workout[]>);
+  }, [workouts]);
+
+  const workoutDates = Object.entries(grouped); // [["2025-10-15", [workouts]], ...]
 
   if (loading) {
     return (
@@ -64,72 +44,49 @@ export default function WorkoutLog() {
 
   return (
     <View style={styles.container}>
-
       <Pressable style={styles.backButton} onPress={() => router.back()}>
         <Text style={styles.backText}>← Back</Text>
       </Pressable>
 
       <Text style={styles.title}>Workout History</Text>
-
-      {error ? <Text style={styles.error}>{error}</Text> : null}
+      {error && <Text style={styles.error}>{error}</Text>}
 
       <FlatList
-        data={workouts}
-        keyExtractor={(w) => w.id}
-        renderItem={renderItem}
-        contentContainerStyle={{ paddingBottom: 32 }}
+        data={workoutDates}
+        keyExtractor={([date]) => date}
+        renderItem={({ item: [date, dayWorkouts] }) => (
+          <Pressable
+            style={styles.card}
+            onPress={() => router.push(`/workouthistory/${date}`)}
+          >
+            <Text style={styles.date}>{date}</Text>
+            <Text style={styles.meta}>{dayWorkouts.length} workouts logged</Text>
+          </Pressable>
+        )}
       />
 
-      {workouts.length === 0 && <Text style={styles.empty}>No workouts yet — start one from the Dashboard!</Text>}
+      {workouts.length === 0 && (
+        <Text style={styles.empty}>No workouts yet — start one from the Dashboard!</Text>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    backgroundColor: "#f7f7f8", 
-    padding: 16
+  container: { flex: 1, backgroundColor: "#f7f7f8", padding: 16 },
+  center: { justifyContent: "center", alignItems: "center" },
+  title: { marginTop: 15, fontSize: 24, fontWeight: "700" },
+  card: {
+    backgroundColor: "#fff",
+    padding: 16,
+    borderRadius: 10,
+    marginBottom: 12,
+    elevation: 2,
   },
-  center: { 
-    justifyContent: "center", 
-    alignItems: "center" 
-  },
-  title: { 
-    marginTop: 15,
-    fontSize: 24, 
-    fontWeight: "700",
-  },
-  card: { 
-    backgroundColor: "#fff", 
-    padding: 16, 
-    borderRadius: 10, 
-    marginBottom: 12, 
-    elevation: 2 
-  },
-  date: { 
-    fontSize: 18, 
-    fontWeight: "600" 
-  },
-  meta: { 
-    fontSize: 13, 
-    color: "#666", 
-    marginTop: 6 },
-  empty: { 
-    marginTop: 20, 
-    textAlign: "center", 
-    color: "#777" 
-  },
-  error: { 
-    color: "#b00020", 
-    marginBottom: 8 
-  },
-  backButton: { 
-    marginBottom: 5,
-    marginTop: 30,
-  },
-  backText: { 
-    fontSize: 16, 
-    color: "#007AFF" 
-  },
+  date: { fontSize: 18, fontWeight: "600" },
+  meta: { fontSize: 13, color: "#666", marginTop: 6 },
+  empty: { marginTop: 20, textAlign: "center", color: "#777" },
+  error: { color: "#b00020", marginBottom: 8 },
+  backButton: { marginBottom: 5, marginTop: 30 },
+  backText: { fontSize: 16, color: "#007AFF" },
 });

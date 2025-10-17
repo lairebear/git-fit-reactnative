@@ -9,7 +9,8 @@ export default function LogWorkout() {
   const [workoutName, setWorkoutName] = useState("");
   const [sets, setSets] = useState("");
   const [reps, setReps] = useState("");
-  const [duration, setDuration] = useState("");
+  const [duration, setDuration] = useState(""); // optional
+  const [notes, setNotes] = useState(""); // optional
 
   const handleSave = async () => {
     if (!workoutName.trim()) {
@@ -17,13 +18,17 @@ export default function LogWorkout() {
       return;
     }
 
-    const newWorkout = {
+    const newWorkout: any = {
       name: workoutName,
       sets: Number(sets) || 0,
       reps: Number(reps) || 0,
       duration: duration ? `${duration} min` : "",
       date: new Date().toISOString(),
     };
+
+    if (notes.trim()) {
+      newWorkout.notes = notes.trim(); // only include notes if not empty
+    }
 
     // placeholder for saving the workout
     // await saveWorkout(newWorkout);
@@ -75,6 +80,14 @@ export default function LogWorkout() {
         keyboardType="numeric"
       />
 
+     <TextInput
+        style={[styles.input, styles.notesInput]}
+        placeholder="Notes (optional)"
+        value={notes}
+        onChangeText={setNotes}
+        numberOfLines={3}
+      />
+
       <Pressable style={styles.saveButton} onPress={handleSave}>
         <Text style={styles.saveText}>Save Workout</Text>
       </Pressable>
@@ -100,6 +113,10 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 15,
     fontSize: 16,
+  },
+  notesInput: {
+    minHeight: 42,
+    textAlignVertical: "top",
   },
   saveButton: {
     backgroundColor: "#007AFF",
