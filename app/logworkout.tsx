@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, StyleSheet, Pressable, Alert } from "react-native";
 import { useRouter } from "expo-router";
-// import { saveWorkout } from !!! ;
+import { saveWorkout } from "../src/services/apiClient"; // added
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { format } from "date-fns";
 
 export default function LogWorkout() {
   const router = useRouter();
@@ -9,40 +11,49 @@ export default function LogWorkout() {
   const [workoutName, setWorkoutName] = useState("");
   const [sets, setSets] = useState("");
   const [reps, setReps] = useState("");
-  const [duration, setDuration] = useState(""); // optional
+  const [duration, setDuration] = useState("");
+  const [saving, setSaving] = useState(false); // added
   const [notes, setNotes] = useState(""); // optional
 
-  const handleSave = async () => {
-    if (!workoutName.trim()) {
-      Alert.alert("Missing info", "Please enter a workout name.");
-      return;
-    }
+const handleSave = async () => {
+  if (!workoutName.trim()) {
+    Alert.alert("Missing info", "Please enter a workout name.");
+    return;
+  }
 
-    const newWorkout: any = {
-      name: workoutName,
-      sets: Number(sets) || 0,
-      reps: Number(reps) || 0,
-      duration: duration ? `${duration} min` : "",
-      date: new Date().toISOString(),
-    };
-
-    if (notes.trim()) {
-      newWorkout.notes = notes.trim(); // only include notes if not empty
-    }
-
-    // placeholder for saving the workout
-    // await saveWorkout(newWorkout);
-    // waiting for the API to be built, then i'll call the import later
-
-    console.log("Workout to save:", newWorkout); // temporary feedback
-
-    Alert.alert("Success", "Workout logged (temporarily).");
-    router.back(); // navigate back to the previous screen
+  const payload = {
+    date: new Date().toISOString(),
+    exercises: [
+      {
+        exerciseId: "e1", // placeholder for now
+        sets: Number(sets) || 0,
+        reps: Number(reps) || 0,
+      },
+    ],
+    notes: workoutName,
+    durationMinutes: duration ? Number(duration) : undefined,
   };
+
+  setSaving(true);
+  try {
+    const saved = await saveWorkout(payload);
+    console.log("Saved workout:", saved);
+
+    const today = format(new Date(), "yyyy-MM-dd");
+    await AsyncStorage.setItem("lastWorkoutDate", today);
+
+    Alert.alert("Success", "Workout logged.");
+    router.push("/workoutlog"); // 👈 direct push instead of back
+  } catch (err: any) {
+    console.error("Save failed:", err);
+    Alert.alert("Save failed", err?.message ?? "Unknown error");
+  } finally {
+    setSaving(false);
+  }
+};
 
   return (
     <View style={styles.container}>
-
       <Pressable onPress={() => router.back()} style={styles.backButton}>
         <Text style={styles.backText}>← Back</Text>
       </Pressable>
@@ -80,16 +91,9 @@ export default function LogWorkout() {
         keyboardType="numeric"
       />
 
-     <TextInput
-        style={[styles.input, styles.notesInput]}
-        placeholder="Notes (optional)"
-        value={notes}
-        onChangeText={setNotes}
-        numberOfLines={3}
-      />
 
-      <Pressable style={styles.saveButton} onPress={handleSave}>
-        <Text style={styles.saveText}>Save Workout</Text>
+      <Pressable style={styles.saveButton} onPress={handleSave} disabled={saving}>
+        <Text style={styles.saveText}>{saving ? "Saving..." : "Save Workout"}</Text>
       </Pressable>
     </View>
   );
@@ -113,10 +117,6 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 15,
     fontSize: 16,
-  },
-  notesInput: {
-    minHeight: 42,
-    textAlignVertical: "top",
   },
   saveButton: {
     backgroundColor: "#007AFF",
