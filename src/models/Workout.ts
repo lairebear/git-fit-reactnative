@@ -9,7 +9,7 @@ export interface WorkoutExercise {
 
 export interface Workout {
   id: string;
-  date: string; // YYYY-MM-DD (simple)
+  date: string; // MM-DD-YYYY
   durationMinutes?: number;
   exercises: WorkoutExercise[];
   notes?: string;
@@ -18,18 +18,19 @@ export interface Workout {
 export const sampleWorkouts: Workout[] = [
   {
     id: "w1",
-    date: "2025-09-30",
+    date: "9-30-2025",
     durationMinutes: 45,
     exercises: [
       { exerciseId: "1", sets: 3, reps: 12 },
       { exerciseId: "2", sets: 4, reps: 10 },
     ],
-    notes: "Felt strong.",
+    notes: "feeling silly",
   },
   {
     id: "w2",
-    date: "2025-09-29",
+    date: "9-29-2025",
     durationMinutes: 30,
     exercises: [{ exerciseId: "4", sets: 3, reps: 1 }],
+    notes: "i'm locked in Now"
   },
 ];
