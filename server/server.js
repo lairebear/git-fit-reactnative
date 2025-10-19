@@ -35,4 +35,12 @@ app.post("/api/workouts", (req, res) => {
   }
 });
 
-app.listen(4000, () => console.log("API running on http://localhost:4000"));
+app.listen(4000, "0.0.0.0", () => {
+  console.log("✅ API running on http://10.110.35.124:4000");
+});
+
+// clear all workouts (for testing purposes ONLYYYY DONT)
+app.delete("/api/workouts", (_req, res) => {
+  workouts.length = 0; // empties the array
+  res.json({ ok: true, message: "All workouts cleared" });
+});

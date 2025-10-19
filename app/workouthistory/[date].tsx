@@ -1,11 +1,9 @@
-// app/workouthistory/[date].tsx
 import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, StyleSheet, Pressable, ActivityIndicator } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { fetchWorkouts } from "../../src/services/apiClient";
 import { sampleWorkouts } from "../../src/models/Workout";
 import type { Workout, WorkoutExercise } from "../../src/models/Workout";
-import type { Exercise } from "../../src/models/Exercise";
 import { sampleExercises } from "../../src/models/Exercise";
 
 export default function WorkoutsByDate() {
@@ -33,10 +31,15 @@ export default function WorkoutsByDate() {
         setLoading(false);
       });
 
-    return () => {
-      mounted = false;
-    };
+    return () => { mounted = false; };
   }, [date]);
+
+  const getExerciseById = (id: string) => sampleExercises.find((ex) => ex.id === id);
+
+  const formatDate = (d: string) => {
+    const dt = new Date(d);
+    return dt.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+  };
 
   if (loading) {
     return (
@@ -47,17 +50,13 @@ export default function WorkoutsByDate() {
     );
   }
 
-  const getExerciseById = (id: string) => {
-    return sampleExercises.find((ex) => ex.id === id);
-  };
-
   return (
     <View style={styles.container}>
       <Pressable style={styles.backButton} onPress={() => router.back()}>
         <Text style={styles.backText}>← Back</Text>
       </Pressable>
 
-      <Text style={styles.title}>Workouts on {date}</Text>
+      <Text style={styles.title}>Workouts on {date ? formatDate(date as string) : "—"}</Text>
 
       {workouts.length === 0 ? (
         <Text style={styles.empty}>No workouts found for this date.</Text>
@@ -67,12 +66,10 @@ export default function WorkoutsByDate() {
           keyExtractor={(w) => w.id}
           renderItem={({ item: workout }) => (
             <View style={styles.card}>
-              {/* Workout header */}
               <Text style={styles.workoutTitle}>
-                Workout • {workout.durationMinutes ?? "—"} min
+                {workout.name ?? "Workout"} • {workout.durationMinutes ?? 0} min
               </Text>
 
-              {/* Exercises */}
               <FlatList
                 data={workout.exercises}
                 keyExtractor={(ex) => ex.exerciseId}
@@ -91,7 +88,6 @@ export default function WorkoutsByDate() {
                 }}
               />
 
-              {/* Workout notes (once per workout) */}
               {workout.notes ? <Text style={styles.notes}>💬 {workout.notes}</Text> : null}
             </View>
           )}

@@ -41,6 +41,7 @@ function createExercise(payload) {
     id: genId("ex"),
     name: payload.name,
     category: payload.category,
+    durationMinutes: payload.durationMinutes ?? 0,
     equipment: payload.equipment
   };
   exercises.unshift(item);

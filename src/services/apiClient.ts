@@ -1,4 +1,4 @@
-const BASE_URL = "http://10.110.35.124:8082"; // change to 10.0.2.2 or your PC LAN IP for emulator/device
+const BASE_URL = "http://10.110.35.124:4000"; // change to 10.0.2.2 or your PC LAN IP for emulator/device
 
 // export async function fetchWorkouts() {
 //   const res = await fetch(`${BASE_URL}/api/workouts`);
@@ -14,7 +14,7 @@ export async function fetchWorkouts() {
   const rawText = await res.text();
 
   console.log(`[fetchWorkouts] Time: ${end - start}ms`);
-  console.log(`[fetchWorkouts] Raw response: ${rawText.slice(0, 300)}`); // Limit for readability
+  console.log(`[fetchWorkouts] Raw response: ${rawText.slice(0, 300)}`); // readability
 
   if (!res.ok) {
     throw new Error(`Server error ${res.status}: ${rawText}`);
