@@ -10,6 +10,7 @@ export interface WorkoutExercise {
 export interface Workout {
   id: string;
   date: string; // MM-DD-YYYY
+  name?: string;
   durationMinutes?: number;
   exercises: WorkoutExercise[];
   notes?: string;
