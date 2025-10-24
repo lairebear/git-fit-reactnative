@@ -16,6 +16,7 @@ app.get("/api/health", (_req, res) => res.json({ status: "ok" }));
 app.get("/api/exercises", (_req, res) => res.json(exercises));
 app.post("/api/exercises", (req, res) => {
   try {
+    console.log("📦 Incoming workout payload:", req.body);
     const item = createExercise(req.body);
     res.status(201).json(item);
   } catch (err) {
