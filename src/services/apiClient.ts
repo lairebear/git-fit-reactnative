@@ -1,4 +1,4 @@
-const BASE_URL = "http://10.110.35.124:4000"; // change to 10.0.2.2 or your PC LAN IP for emulator/device
+const BASE_URL = "http://10.110.35.124:4000"; 
 
 // export async function fetchWorkouts() {
 //   const res = await fetch(`${BASE_URL}/api/workouts`);
